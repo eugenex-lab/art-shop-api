@@ -1,0 +1,31 @@
+{
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongodb": "^5.0.0",
+    "mongoose": "^6.9.0",
+    "n": "^9.0.1",
+    "node": "^12.22.9",
+    "nodemon": "^2.0.20",
+    "stable": "^0.1.8"
+  },
+  "name": "art-shop",
+  "version": "1.0.0",
+  "description": "Art collection store",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js"
+  },
+  "keywords": [
+    "Node",
+    "Mong",
+    "Db",
+    "Sql",
+    "postgress",
+    "art"
+  ],
+  "author": "eugenex-lab",
+  "license": "ISC"
+}
