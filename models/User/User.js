@@ -25,11 +25,11 @@ const UserSchema = new mongoose.Schema({
             required: [true, "Password is required"]
         },
 
-        artCount: {
-            type: Number,
-            default: 0
-        }
-        ,
+        // artCount: {
+        //     type: Number,
+        //     default: 0
+        // }
+        // ,
 
         createdAt: {
             type: Date,
@@ -42,7 +42,7 @@ const UserSchema = new mongoose.Schema({
         }
         ,
 
-        isADmin: {
+        isAdmin: {
             type: Boolean,
             default: false
         }
@@ -53,7 +53,7 @@ const UserSchema = new mongoose.Schema({
             enum: ['Guest', 'Admin', 'ArtistEditor'],
         },
 
-        viewBy: {
+        viewers: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         },
@@ -72,12 +72,42 @@ const UserSchema = new mongoose.Schema({
             }
         ],
 
-        active: {
-            type: Boolean,
-            default: true
+        // active: {
+        //     type: Boolean,
+        //     default: true
+        // }
+        // ,
+        ArtWorks: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            }
+        ],
+
+        plans: [
+
+            {
+                type: String,
+                enum: ['Free', 'Premium', 'Pro'],
+                default: 'Free'
+            }
+        ],
+
+    userAward : [
+
+        {
+          type:String,
+          enum: ['None','Bronze', 'Silver', 'Gold', 'Platinum'],
+            default: 'None'
         }
-        ,
-        ArtWorks: []
+        ],
+
+        blocked: [
+            {
+                type : String,
+                ref: 'Post'
+            }
+        ]
 
     },
     {
