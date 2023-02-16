@@ -1,7 +1,8 @@
 const bycrypt = require("bcryptjs");
 
 const User = require("../../models/User/User");
-const {appError} = require("../../utils/appError");
+const {appError,AppError} = require("../../utils/appError");
+
 const generateToken = require("../../utils/generateToken");
 const getTokenHeader = require("../../utils/getTokenHeader");
 
@@ -44,8 +45,12 @@ const userRegisterController = async (req, res) => {
 //Login User
 const userLoginController = async (req, res) => {
 
+    console.log("Here is the header ---> ");
+
     const {email, password} = req.body;
     try {
+
+        console.log("Here is the header ---> ");
 
         const userFound = await User.findOne({email});
 
@@ -96,6 +101,7 @@ const userLoginController = async (req, res) => {
             } //userFound
         });
     } catch (error) {
+        console.log(error.message);
         res.json(error.message);
     }
 }
@@ -133,9 +139,11 @@ const usersController = async (req, res) => {
     try {
         res.json({
             status: "success",
-            data: "users route !! "
+            data: "users route !! " ,
+
         });
     } catch (error) {
+        console.log("something went wrong");
         res.json(error.message);
     }
 }
@@ -220,8 +228,65 @@ const profilePhotoController = async (req, res, next) => {
             catch (error) {
         console.log("Error uploading file");
 
-        next(AppError(error.message, 500));
+        next(appError(error.message, 500));
 
+    }
+}
+//
+const profileViewerController = async (req, res, next) => {
+    try {
+
+        // find user the id of the user to be viewed
+
+        const user = await User.findById(req.params.id); //
+
+        // check the user who is viewing the profile
+
+        const userViewer = await User.findById(req.userAuth); //
+
+        // check if the user is viewing his own profile
+
+        if (userViewer._id.toJSON() === user._id.toJSON()) {
+            return next(appError("You cannot view your own profile", 403));
+        }
+
+
+
+
+        // check if the user profile viewed was found and
+        // also the the user viewing if the user is found
+
+        if (user && userViewer) {
+
+            const isUserProfileAlreadyViewed = user.viewers.find(
+                viewer => viewer.toString() === userViewer._id.toJSON()
+            );
+
+            if (isUserProfileAlreadyViewed){
+                return next(appError("You have already viewed this profile", 403));
+            }
+            else {
+
+            // push the userWHO is viewing
+            // the profile to the viewers array
+
+            user.viewers.push(userViewer._id);
+
+
+            // save the user profile
+            await user.save();
+
+            res.json({
+                status: "success",
+                data: "profile viewed successfully "
+            }
+        );
+        }
+        }
+
+    }
+        catch (error) {
+        res.json(error.message);
     }
 }
 
@@ -233,6 +298,7 @@ module.exports = {
     usersController,
     userDelController,
     userUpdateController,
-    profilePhotoController
+    profilePhotoController,
+    profileViewerController
 
 }

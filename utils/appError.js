@@ -1,14 +1,17 @@
+//App Errpr
+const appError = (message, statusCode) => {
+    let error = new Error(message);
+    error.statusCode = statusCode ? statusCode : 500;
+    return error;
+};
 
-// create error class
-
-class appError extends Error {
+//Err class
+class AppError extends Error {
     constructor(message, statusCode) {
         super(message);
         this.statusCode = statusCode;
-        this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
-        this.isOperational = true;
-        Error.captureStackTrace(this, this.constructor);
+        this.status = "failed";
     }
 }
 
-module.exports = appError;
+module.exports = { appError, AppError };

@@ -53,10 +53,10 @@ const UserSchema = new mongoose.Schema({
             enum: ['Guest', 'Admin', 'ArtistEditor'],
         },
 
-        viewers: {
+        viewers:[ {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
-        },
+        }],
 
         followers: [
             {

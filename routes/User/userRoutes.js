@@ -7,8 +7,8 @@ const {userDelController} = require("../../controllers/User/UserController");
 const {userUpdateController} = require("../../controllers/User/UserController");
 const isLogin = require("../../middlewares/isLogin");
 const {profilePhotoController} =  require("../../controllers/User/UserController");
-const {profileViewer} = require("../../controllers/User/UserController");
-const  multer = require("multer");
+const {profileViewerController} = require("../../controllers/User/UserController");
+const  multer  = require("multer");
 const userRouter = express.Router();
 const storage = require("../../config/cloudinary");
 
@@ -51,7 +51,7 @@ userRouter.put('/:id', userUpdateController
 
 //GET profile view count /api/v1/users/profile/view-count/:id
 
-// userRouter.get('/profile-viewer/:id', profileViewer);
+userRouter.get('/profile-viewer/:id', isLogin ,  profileViewerController);
 
 // profile photo upload /api/v1/users/profile/photo
 userRouter.post('/profile-photo' ,
