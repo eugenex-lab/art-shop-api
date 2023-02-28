@@ -4,12 +4,14 @@ const { postController } = require("../../controllers/Post/PostController");
 const { postsController } = require("../../controllers/Post/PostController");
 const { postDelController } = require("../../controllers/Post/PostController");
 const { postUpdateController } = require("../../controllers/Post/PostController");
+const isLogin = require("../../middlewares/isLogin");
+
 
 const postRouter = express.Router();
 
 // register users /api/v1/post/register
 
-postRouter.post("/register", postCreateController);
+postRouter.post("/", isLogin, postCreateController);
 
 postRouter.get("/:id", postController);
 

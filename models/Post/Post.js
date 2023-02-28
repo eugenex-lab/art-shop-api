@@ -13,7 +13,7 @@ const PostSchema = new mongoose.Schema({
     ,
     price: {
         type: Number,
-        required: true,
+        // required: true,
     }
     ,
 
@@ -25,16 +25,16 @@ const PostSchema = new mongoose.Schema({
 
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        // required: true,
         ref: 'Category'
     }
     ,
 
-    artist: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-    }
-    ,
+    // artist: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     required: true,
+    // }
+    // ,
 
     isSold: {
         type: Boolean,
@@ -65,7 +65,7 @@ const PostSchema = new mongoose.Schema({
     numberOfComments: [{
         type: mongoose.Schema.Types.ObjectId,
         default: 0,
-        ref: 'User'
+         ref: 'User'
     }
     ]
     ,
@@ -88,12 +88,35 @@ const PostSchema = new mongoose.Schema({
 
     photo: [{
         type: String,
-        required: [true, "Photo is required"]
+        // required: [true,  "Photo is required"]
     }]
     ,
 
-    timestamp : true
+    comments: [{
+        type: mongoose.Schema.Types.ObjectId,
+    }
+
+    ]
+
+    ,
+
+    posts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post'
+
+    }
+    ]
+
+    ,
+
+    timestamp: {
+        type: Date,
+        default: Date.now
+    }
 });
+
+
+
 
 const Post = mongoose.model("Post", PostSchema);
 

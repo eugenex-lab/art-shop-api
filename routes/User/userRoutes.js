@@ -6,8 +6,19 @@ const {usersController} = require("../../controllers/User/UserController");
 const {userDelController} = require("../../controllers/User/UserController");
 const {userUpdateController} = require("../../controllers/User/UserController");
 const isLogin = require("../../middlewares/isLogin");
+const isAdmin = require("../../middlewares/isAdmin");
 const {profilePhotoController} =  require("../../controllers/User/UserController");
 const {profileViewerController} = require("../../controllers/User/UserController");
+const {userFollowingController} = require("../../controllers/User/UserController");
+const {userUnFollowingController} = require("../../controllers/User/UserController");
+const {userBlockedController} = require("../../controllers/User/UserController");
+const {userUnblockedController} = require("../../controllers/User/UserController");
+const {adminBlockedController} = require("../../controllers/User/UserController");
+const {adminUnblockedController} = require("../../controllers/User/UserController");
+const {userUpdatePasswordController} = require("../../controllers/User/UserController");
+const {deleteAccountController} = require("../../controllers/User/UserController");
+
+
 const  multer  = require("multer");
 const userRouter = express.Router();
 const storage = require("../../config/cloudinary");
@@ -41,17 +52,44 @@ userRouter.get('/', usersController
 
 // del user /api/v1/users/:id
 
-userRouter.delete('/:id', userDelController);
+// userRouter.delete('/:id', userDelController);
 
 // update user /api/v1/users/:id
 
-userRouter.put('/:id', userUpdateController
+userRouter.put('/', isLogin, userUpdateController
 );
 
+// password update /api/v1/users/password/:ids
+
+userRouter.put('/update-password', isLogin, userUpdatePasswordController
+);
+
+// following /api/v1/users/following/:id
+userRouter.get('/following/:id', isLogin , userFollowingController);
+
+// unfollowing /api/v1/users/unfollowing/:id
+userRouter.get('/unfollowing/:id', isLogin , userUnFollowingController);
+
+// block user /api/v1/users/block/:id
+userRouter.get('/blocked/:id', isLogin , userBlockedController);
+
+
+// unblock user /api/v1/users/unblock/:id
+userRouter.get('/unblocked/:id', isLogin , userUnblockedController);
+
+// admin block user /api/v1/users/admin-block/:id
+userRouter.put('/admin-blocked/:id', isLogin  , adminBlockedController);
+
+// admin unblock user /api/v1/users/admin-unblock/:id
+userRouter.put('/admin-unblocked/:id', isLogin  , adminUnblockedController);
 
 //GET profile view count /api/v1/users/profile/view-count/:id
 
 userRouter.get('/profile-viewer/:id', isLogin ,  profileViewerController);
+
+// delete user account /api/v1/users/delete-account/
+
+userRouter.delete('/delete-account', isLogin ,  deleteAccountController);
 
 // profile photo upload /api/v1/users/profile/photo
 userRouter.post('/profile-photo' ,

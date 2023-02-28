@@ -1,12 +1,42 @@
-// register post
+
+const Post = require("../../models/Post/Post");
+const User = require("../../models/User/User");
+
+
 const postCreateController = async (req, res) => {
+    const { title, description   } = req.body;
+
+
     try {
+
+// find user by id
+
+        const artist = await User.findById(req.userAuth)  ;
+
+        // create post
+        const postCreate = await Post.create({
+            title,
+            description,
+            user: artist._id,
+        });
+
+        // add post to user
+
+        artist.posts.push(postCreate);
+
+        // save user
+        await artist.save();
+
+
         res.json({
             status: "success",
-            data: "art work created successfully",
+            data: postCreate ,
+
         });
     } catch (error) {
+        console.log("AN ERROR OCCURED" );
         res.json(error.message);
+        // console.log(error.message)
     }
 };
 
