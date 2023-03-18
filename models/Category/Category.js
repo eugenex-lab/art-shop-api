@@ -13,6 +13,10 @@ const categorySchema = new mongoose.Schema({
             required: [true, "Title is required"]
 
         },
+    description : {
+        type: String,
+
+    }
     },
     {timestamps: true}
 );

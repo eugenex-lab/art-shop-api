@@ -42,6 +42,12 @@ const userSchema = new mongoose.Schema({
             default: false
         }
         ,
+    // isUserBlocked:{
+    //
+    //     type: Boolean,
+    //     default: false
+    //
+    // },
 
         isAdmin: {
             type: Boolean,
@@ -222,6 +228,20 @@ userSchema.pre("findOne",
             //Find the user by ID and update
 
             await User.findByIdAndUpdate(
+                // userId,
+                // {
+                //     isBlocked: true,
+                // },
+                // {
+                //     new: true,
+                // }
+            );
+
+
+
+
+
+            await User.findByIdAndUpdate(
                 userId,
                 {
                     isBlocked: true,
@@ -230,21 +250,6 @@ userSchema.pre("findOne",
                     new: true,
                 }
             );
-
-
-
-
-
-            // Find the user by ID and update
-            // await User.findByIdAndUpdate(
-                // userId,
-                // {
-                //     isBlocked: true,
-                // },
-                // {
-                //     new: true,
-                // }
-            // );
         } else {
             userSchema.virtual("isActive").get(function () {
                 return true;

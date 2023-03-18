@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="dbArtshop" uuid="885fc0e6-e74c-4a76-b90f-e53e83293e9d">
+    <data-source source="LOCAL" name="@localhost" uuid="b5d8222d-47a4-4b58-86d1-ea8def9c3a58">
       <driver-ref>mongo</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
-      <jdbc-url>mongodb+srv://art-shop.oq4f1ay.mongodb.net/dbArtshop?retryWrites=true&amp;w=majority</jdbc-url>
+      <jdbc-url>mongodb://localhost:27017</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

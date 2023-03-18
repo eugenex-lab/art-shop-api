@@ -16,7 +16,8 @@ const isLogin = (req, res, next) => {
 
     if (!decodeUser) {
         return res.json({
-            message: "Invalid Token/Token Expired , Please login again"
+            message: "Invalid Token/Token Expired , Please login again",
+            status: "error",
         });
     }else {
         next();

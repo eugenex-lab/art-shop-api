@@ -1,5 +1,6 @@
 const express = require('express');
 
+const globalErrHandler = require("./middlewares/globalErrHandler");
 const userRouter = require('./routes/User/userRoutes');
 const ratingRouter = require('./routes/Rating/ratingRoutes');
 const postRouter = require('./routes/Post/postRoutes');
@@ -70,6 +71,9 @@ app.use('/api/v1/comments',commentRouter);
 
 // RATINGS route
 app.use('/api/v1/ratings',ratingRouter);
+
+// global error handler
+app.use(globalErrHandler);
 
 
 //404 error

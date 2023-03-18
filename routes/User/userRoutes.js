@@ -3,7 +3,7 @@ const {userRegisterController} = require("../../controllers/User/UserController"
 const {userLoginController} = require("../../controllers/User/UserController");
 const {userController} = require("../../controllers/User/UserController");
 const {usersController} = require("../../controllers/User/UserController");
-const {userDelController} = require("../../controllers/User/UserController");
+
 const {userUpdateController} = require("../../controllers/User/UserController");
 const isLogin = require("../../middlewares/isLogin");
 const isAdmin = require("../../middlewares/isAdmin");
@@ -25,7 +25,7 @@ const storage = require("../../config/cloudinary");
 
 // multer config instance
 
-const upload = multer({
+const upload = multer ({
     storage: storage,
 }
 
@@ -46,7 +46,7 @@ userRouter.get('/profile/', isLogin,userController);
 
 // get users /api/v1/users
 
-userRouter.get('/', usersController
+userRouter.get('/',  isLogin, usersController
 );
 
 

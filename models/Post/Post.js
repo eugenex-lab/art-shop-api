@@ -25,16 +25,16 @@ const PostSchema = new mongoose.Schema({
 
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        // required: true,
+        required: true,
         ref: 'Category'
     }
     ,
 
-    // artist: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     required: true,
-    // }
-    // ,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        // required: [true, "Please Author is required"],
+    },
 
     isSold: {
         type: Boolean,
@@ -88,7 +88,7 @@ const PostSchema = new mongoose.Schema({
 
     photo: [{
         type: String,
-        // required: [true,  "Photo is required"]
+        required: [true,  "Photo is required"]
     }]
     ,
 
@@ -107,14 +107,66 @@ const PostSchema = new mongoose.Schema({
     }
     ]
 
-    ,
-
-    timestamp: {
-        type: Date,
-        default: Date.now
+},
+    {
+        toJSON: {virtuals: true},
+        timestamps: true
     }
-});
+);
 
+
+PostSchema.pre(/^find/, function (next) {
+
+    PostSchema.virtual('numberOfViewCount').get(function () {
+
+        const post = this;
+        return post.numberOfViews.length;
+    });
+
+    // add likes count as virtual field
+
+    PostSchema.virtual('numberOfLikesCount').get(function () {
+
+        const post = this;
+        return post.numberOfLikes.length;
+    });
+
+
+    PostSchema.virtual('numberOfDislikesCount').get(function () {
+        const post = this;
+        return post.numberOfDislikes.length;
+    }
+    );
+
+    // % of liked posts in total posts
+
+    PostSchema.virtual('percentageOfLikes').get(function () {
+        const post = this;
+        const total = post.numberOfLikes.length + post.numberOfDislikes.length;
+        return `${Math.round((post.numberOfLikes.length / total) * 100)}%`;
+
+    }
+    );
+
+    // days ago post was created
+
+    PostSchema.virtual('daysAgo').get(function () {
+        const post = this;
+        const date = new Date(post.createdAt);
+        const days = Math.floor((new Date() - date) / (1000 * 60 * 60 * 24));
+
+
+
+        return days === 0 ? 'Today' : days === 1 ? 'Yesterday' : `${days} days ago`;
+
+    }
+    );
+
+
+
+
+    next();
+});
 
 
 

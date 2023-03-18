@@ -13,24 +13,25 @@ const postmodel = require("../../models/Post/Post");
 
 
 //Register User
-const userRegisterController = async (req, res) => {
+const userRegisterController = async (req, res, next) => {
     console.log(req.body);
     const {firstname, lastname, email, profileImage, password} = req.body;
     try {
 
         const userFound = await User.findOne({email});
         if (userFound) {
-            return res.json({
-                message: "User already exists"
-            }
-            );
+            // return res.json({
+            //     message: "User already exists"
+            // }
+
+            return next(appErr("User already exists", 404));
         }
         // hash password
         const salt = await bycrypt.genSalt(10);
         const hashedPassword = await bycrypt.hash(password, salt);
 
         // create user
-        const user = await User.create({
+        const user = await User.  create({
             firstname,
             lastname,
             email,
@@ -43,13 +44,15 @@ const userRegisterController = async (req, res) => {
             data: user
         });
     } catch (error) {
-        res.json(error.message);
+        // res.json(error.message);
+
+        return next(appErr(error.message, 404));
     }
 }
 
 
 //Login User
-const userLoginController = async (req, res) => {
+const userLoginController = async (req, res, next) => {
 
     console.log("Here is the header ---> ");
 
@@ -61,10 +64,14 @@ const userLoginController = async (req, res) => {
         const userFound = await User.findOne({email});
 
         if (!userFound) {
-            return res.json({
-                    message: "Wrong login credentials"
-                }
-            );
+
+            return next(appErr("User not found", 404));
+
+            // res.json({
+            //         message: "Wrong login credentials"
+            //     }
+            // );
+
         }
 
         const isPasswordMatch = await bycrypt.compare(password, userFound.password);
@@ -72,28 +79,14 @@ const userLoginController = async (req, res) => {
 
 
         if (!isPasswordMatch) {
-            return res.json({
-                message: "Wrong login credentials"
-            }
-            );
+            return next(appErr("Wrong login credentials", 404));
+
+            // res.json({
+            //     message: "Wrong login credentials"
+            // }
+            // );
         }
 
-        // const userFound = await User.findOne({email});
-        // if (!userFound) {
-        //     return res.json({
-        //         message:        "Wrong login credentials"
-        //     }
-        //     );
-        // }
-        // // check password
-        // const userPassword = await User.findOne({password});
-        //
-        // if (!userPassword) {
-        //     return res.json({
-        //         message:   "Wrong login credentials"
-        //     }
-        //     );
-        // }
 
         res.json({
             status: "success",
@@ -107,46 +100,42 @@ const userLoginController = async (req, res) => {
             } //userFound
         });
     } catch (error) {
-        console.log(error.message);
-        res.json(error.message);
+        // console.log(error.message);
+        // res.json(error.message);
+
+        return next(appErr(error.message, 404));
     }
 }
 
 //Get Single User Profile
 const userController = async (req, res, next) => {
 
+const {id} = req.params;
+
+
 
     // const {id} = req.params;
     try {
 
-        //get token from header
+        if(id === null){
+            return next(appErr("User not found", 404));
+        }
 
-        // const token = getTokenHeader(req);
-
-
-        // console.log(token);
 
         const user = await User.findById(req.userAuth)
 
-
-        // to to populate the user posts
-        //
-        //     .populate({
-        //     path: "posts",
-        // });
-        //
-
         res.json({
-            status: "success",
-            data: user
+            status: "succe777ss " + user._id,
+            data: user,
+            id: id
         });
     } catch (error) {
-    next(error.message);
+        return next(appErr(error.message, 404));
     }
 }
 
 //Get All Users
-const usersController = async (req, res) => {
+const usersController = async (req, res,next) => {
     try {
 
         const users = await User.find();
@@ -157,23 +146,22 @@ const usersController = async (req, res) => {
 
         });
     } catch (error) {
-        console.log("something went wrong");
-        res.json(error.message);
+        return next(appErr(error.message, 404));
     }
 }
 
 //Delete User
-const userDelController = async (req, res) => {
-    try {
-        res.json({
-            status: "success",
-            data: "user deleted successfully"
-        });
-    } catch (error) {
-        res.json(error.message);
-    }
-
-}
+// const userDelController = async (req, res) => {
+//     try {
+//         res.json({
+//             status: "success",
+//             data: "user deleted successfully"
+//         });
+//     } catch (error) {
+//         res.json(error.message);
+//     }
+//
+// }
 
 //Update User
 const userUpdateController = async (req, res , next ) => {
@@ -187,6 +175,7 @@ const userUpdateController = async (req, res , next ) => {
             const emailTakenCheck = await  User.findOne({email});
 
             if (emailTakenCheck){
+
                 return next( new appErr("Email already taken", 403));
             }
 
@@ -218,7 +207,7 @@ const userUpdateController = async (req, res , next ) => {
             data: userToUpdate
         });
     } catch (error) {
-        res.json(error.message);
+        return next(appErr(error.message, 404));
     }
 }
 
@@ -259,48 +248,36 @@ const userUpdatePasswordController = async (req, res , next ) => {
 
 
     } catch (error) {
-        res.json(error.message);
+        // res.json(error.message);
+        return next(appErr(error.message, 404));
     }
 }
 
 // profile photo upload
 const profilePhotoController = async (req, res, next) => {
-
     // access the file from req.file
     // console.log("user file uploadeded" + req.file);
-
-
-
     try {
-
         // find user to be updated
-
         const userToUpdate = await User.findById(req.userAuth);   // find user by id
-
-
         // check if user exists
-
-
         if (!userToUpdate) {
             return next(appErr("User not found", 403));
         }
-
         // check if the user is blocked
-
         if (userToUpdate.isBlocked) {
             return next(appErr("User is blocked", 403));
-
         }
-
+        // if (userToUpdate.isUserBlocked){
+        //     return next(appErr("User is blocked", 403));
+        // }
         // check if the user is the owner of the profile
-
         if (req.file) {
             await User.findByIdAndUpdate(req.userAuth, {
                     $set: {
                         profileImage: req.file.path
                     }
                     ,
-
                 },
                 {
                     new: true,
@@ -308,7 +285,8 @@ const profilePhotoController = async (req, res, next) => {
             );
             res.json({
                     status: "success",
-                    data: "profile photo uploaded"
+                    data: "profile photo uploaded",
+                    profileImage: req.file.path
                 }
             );
 
@@ -318,7 +296,7 @@ const profilePhotoController = async (req, res, next) => {
             catch (error) {
         console.log("Error uploading file");
 
-        next(appError(error.message, 500));
+                return next(appErr(error.message, 404));
 
     }
 }
@@ -376,7 +354,7 @@ const profileViewerController = async (req, res, next) => {
 
     }
         catch (error) {
-        res.json(error.message);
+            return next(appErr(error.message, 404));
     }
 }
 
@@ -423,7 +401,7 @@ const userFollowingController = async (req, res, next) => {
         }
 
     } catch (error) {
-        res.json(error.message);
+        return next(appErr(error.message, 404));
     }
 }
 
@@ -444,7 +422,7 @@ const userUnFollowingController = async (req, res, next) => {
             );
 
             if (!isUserAlreadyFollowed){
-                return next(appErr("You have not followed this user"));
+                return next(appErr("You have not followed this user", 400));
             }
 
             else {
@@ -470,7 +448,7 @@ const userUnFollowingController = async (req, res, next) => {
         }
 
     } catch (error) {
-        res.json(error.message);
+        return next(appErr(error.message, 404));
     }
 }
 
@@ -494,6 +472,8 @@ const userBlockedController = async (req, res , next ) => {
                     return next(appErr("You have already blocked this user"));
                 }
 
+                // check if the id of the user to be blocked is the same as the id of the user who is blocking
+
                 else {
 
                     // push the userWHO is following
@@ -514,7 +494,7 @@ const userBlockedController = async (req, res , next ) => {
         }
     } catch (error) {
         console.log("something went wrong");
-        res.json(error.message);
+        return next(appErr(error.message, 404));
     }
 }
 
@@ -539,7 +519,7 @@ const userUnblockedController = async (req, res, next) => {
 
                 // return error with new error message
 
-                return  new Error("You have not blocked this user");
+                return  new Error("You have not blocked this user",403);
             }
 
             else {
@@ -561,8 +541,8 @@ const userUnblockedController = async (req, res, next) => {
             }
 }
     } catch (error) {
-        console.log("something went wrong");
-        res.json(error.message);
+        return next(appErr(error.message, 404));
+        // res.json(error.message);
     }
 
 }
@@ -578,12 +558,20 @@ const adminBlockedController = async (req, res, next ) => {
 
 
         if(!userToBeBlocked) {
-            return next(appErr("User does not exist"));
+            return next(appErr("User does not exist",403));
         }
 
         // if user has already been unblocked by admin
         if(userToBeBlocked.isBlocked) {
-            return next(appErr("User has already been blocked"));
+            return next(appErr("User has already been blocked,403"));
+        }
+
+
+
+        // make sure you dont block yourself
+
+        if(userToBeBlocked._id.toString() === req.userAuth.toString()) {
+            return next(appErr("You cannot block yourself",403));
         }
 
 
@@ -599,7 +587,7 @@ const adminBlockedController = async (req, res, next ) => {
 
 
 
-        userToBeBlocked.isBlocked = true;
+        // userToBeBlocked.isBlocked = true;
 
         await userToBeBlocked.save();
 
@@ -611,7 +599,8 @@ const adminBlockedController = async (req, res, next ) => {
         });
     } catch (error) {
         console.log("something went wrong");
-        res.json(error.message);
+        return next(appErr(error.message, 404));
+        // res.json(error.message);
     }
 }
 
@@ -649,10 +638,10 @@ return next(new appErr("User has already been unblocked by admin, or was never b
 
         });
     } catch (error) {
-        console.log("something went wrong");
-        res.json(error.message);
-
-       return  next(error);
+        // console.log("something went wrong");
+        // res.json(error.message);
+        return next(appErr(error.message, 404));
+       // return  next(error);
     }
 }
 
@@ -683,7 +672,8 @@ const deleteAccountController = async (req, res, next) => {
         });
     } catch (error) {
         console.log("something went wrong");
-        res.json(error.message);
+        return next(appErr(error.message, 404));
+        // res.json(error.message);
     }
 }
 
@@ -694,7 +684,6 @@ module.exports = {
     userLoginController,
     userController,
     usersController,
-    userDelController,
     userUpdateController,
     profilePhotoController,
     profileViewerController,
